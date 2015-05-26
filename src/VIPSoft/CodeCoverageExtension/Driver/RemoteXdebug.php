@@ -68,11 +68,14 @@ class RemoteXdebug implements DriverInterface
     public function start()
     {
         $request = $this->buildRequest('create');
+        try {
+            $response = $request->send();
 
-        $response = $request->send();
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('remote driver start failed: ' . $response->getReasonPhrase());
+            if ($response->getStatusCode() !== 200) {
+                throw new \Exception('remote driver start failed: ' . $response->getReasonPhrase());
+            }
+        } catch (\Exception $ex) {
+            print 'Remote failed due to:' . $ex->getMessage() . "\n";
         }
     }
 
@@ -83,17 +86,21 @@ class RemoteXdebug implements DriverInterface
     {
         $request = $this->buildRequest('read');
         $request->setHeader('Accept', 'application/json');
+        try {
+            $response = $request->send();
 
-        $response = $request->send();
+            if ($response->getStatusCode() !== 200) {
+                throw new \Exception('remote driver fetch failed: ' . $response->getReasonPhrase());
+            }
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('remote driver fetch failed: ' . $response->getReasonPhrase());
+            $request = $this->buildRequest('delete');
+            $request->send();
+
+            return json_decode($response->getBody(true), true);
+        } catch (\Exception $ex) {
+            print 'Remote failed due to:' . $ex->getMessage() . "\n";
+            return array();
         }
-
-        $request = $this->buildRequest('delete');
-        $request->send();
-
-        return json_decode($response->getBody(true), true);
     }
 
     /**
