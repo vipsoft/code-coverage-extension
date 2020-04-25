@@ -19,8 +19,8 @@
         "vipsoft/code-coverage-common": "2.5.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "mikey179/vfsStream": "1.2.*"
+        "phpunit/phpunit": "~3.7",
+        "mikey179/vfsstream": "~1.2"
     },
     "autoload": {
         "psr-0": {
